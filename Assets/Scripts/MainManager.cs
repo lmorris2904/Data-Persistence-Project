@@ -18,6 +18,10 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
+    private int bestScore;
+
+    public Text bestScoreText;
+
     
     // Start is called before the first frame update
     void Start()
@@ -68,9 +72,35 @@ public class MainManager : MonoBehaviour
         ScoreText.text = $"Score : {m_Points}";
     }
 
+    public void Awake()
+    {
+        bestScore = PlayerPrefs.GetInt("HighScore1", 0);
+        bestScoreText.text = "Best Score : " + bestScore.ToString();
+    }
+
     public void GameOver()
     {
         m_GameOver = true;
+        HighScoreCalculator();
         GameOverText.SetActive(true);
+    }
+
+    private void HighScoreCalculator()
+    {
+        for (int i = 1; i < 11; i++)
+        {
+            Debug.Log(i);
+            int currentHighScore = PlayerPrefs.GetInt("HighScore" + i, 0);
+            if (m_Points > currentHighScore)
+            {
+                for (int x = 10; x >= i; x--)
+                {
+                    Debug.Log(x + " : " + i);
+                    PlayerPrefs.SetInt("HighScore" + x, PlayerPrefs.GetInt("HighScore" + (x - 1), 0));
+                }
+                PlayerPrefs.SetInt("HighScore" + i, m_Points);
+                break;
+            }
+        }
     }
 }
